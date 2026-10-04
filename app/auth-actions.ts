@@ -82,13 +82,30 @@ export async function registerCreateFamilyAction(formData: FormData) {
   ]);
 
   const user = await prisma.$transaction(async (tx) => {
+    const existingFamilyCount = await tx.family.count();
+
+    const legacySettings =
+      existingFamilyCount === 0
+        ? await tx.appSettings.findUnique({
+            where: { id: 1 },
+            select: { currencyName: true },
+          })
+        : null;
+
     const family = await tx.family.create({
       data: {
         name: familyName,
         code,
-        currencyName: "Credits",
+        currencyName: legacySettings?.currencyName || "Credits",
       },
     });
+
+    if (existingFamilyCount === 0) {
+      await tx.child.updateMany({
+        where: { familyId: null },
+        data: { familyId: family.id },
+      });
+    }
 
     return tx.user.create({
       data: {
