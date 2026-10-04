@@ -1,18 +1,20 @@
 {
   "name": "bank-of-dad",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "prisma migrate deploy && next start -H 0.0.0.0",
+    "start": "prisma db push && next start -H 0.0.0.0",
     "db:generate": "prisma generate",
+    "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.0.12",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
