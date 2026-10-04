@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Child {
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  id           String            @id @default(cuid())
+  childId      String
+  child        Child             @relation(fields: [childId], references: [id], onDelete: Cascade)
+  amountCents  Int
+  description  String
+  transactedAt DateTime          @default(now())
+  status       TransactionStatus @default(POSTED)
+  createdAt    DateTime          @default(now())
+
+  @@index([childId, transactedAt])
+}
+
+enum TransactionStatus {
+  POSTED
+  VOIDED
+}
