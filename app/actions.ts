@@ -3,6 +3,27 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
+export async function updateCurrencyName(formData: FormData) {
+  const currencyName = String(formData.get("currencyName") ?? "").trim().slice(0, 32);
+
+  if (!currencyName) {
+    return;
+  }
+
+  await prisma.appSettings.upsert({
+    where: { id: 1 },
+    create: {
+      id: 1,
+      currencyName,
+    },
+    update: {
+      currencyName,
+    },
+  });
+
+  revalidatePath("/");
+}
+
 export async function createChild(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
 
