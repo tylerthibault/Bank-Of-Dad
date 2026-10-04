@@ -1,0 +1,295 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172033;
+  background: #f3f5f8;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(45, 108, 223, 0.12), transparent 28rem),
+    #f3f5f8;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.shell {
+  width: min(1100px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+.hero {
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2.3rem, 7vw, 4rem);
+  letter-spacing: -0.05em;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #5b6474;
+}
+
+.subtle {
+  color: #687385;
+}
+
+.panel,
+.account-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #e1e6ee;
+  border-radius: 22px;
+  box-shadow: 0 14px 40px rgba(32, 45, 72, 0.07);
+}
+
+.panel {
+  padding: 22px;
+}
+
+.add-kid {
+  display: flex;
+  gap: 20px;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.add-kid h2,
+.empty h2 {
+  margin: 0 0 4px;
+}
+
+.add-kid p,
+.empty p {
+  margin: 0;
+}
+
+.inline-form {
+  display: flex;
+  gap: 10px;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid #ccd4df;
+  background: #fff;
+  border-radius: 12px;
+  padding: 11px 12px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: #2d6cdf;
+  box-shadow: 0 0 0 3px rgba(45, 108, 223, 0.12);
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  background: #172033;
+  color: #fff;
+  padding: 11px 16px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+button:hover {
+  background: #273650;
+}
+
+.accounts {
+  display: grid;
+  gap: 20px;
+}
+
+.account-card {
+  padding: 22px;
+}
+
+.account-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.account-heading h2 {
+  margin: 4px 0 0;
+  font-size: 1.7rem;
+}
+
+.balance {
+  font-size: clamp(1.8rem, 5vw, 2.7rem);
+  letter-spacing: -0.04em;
+}
+
+.negative {
+  color: #b42318;
+}
+
+.positive {
+  color: #137333;
+}
+
+.transaction-form {
+  display: grid;
+  grid-template-columns: 150px 150px 1fr auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f7f9fc;
+}
+
+.transaction-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #536074;
+}
+
+.history {
+  margin-top: 22px;
+}
+
+.history-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.history-heading h3 {
+  margin: 0;
+}
+
+.history-heading span {
+  background: #edf1f6;
+  color: #5c6677;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.transaction-list {
+  display: grid;
+}
+
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.transaction:last-child {
+  border-bottom: 0;
+}
+
+.transaction-copy,
+.transaction-right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transaction-copy span {
+  color: #7a8493;
+  font-size: 0.82rem;
+}
+
+.transaction-right {
+  align-items: end;
+}
+
+.transaction.voided {
+  opacity: 0.46;
+  text-decoration: line-through;
+}
+
+.text-button {
+  padding: 0;
+  background: transparent;
+  color: #6d7787;
+  font-size: 0.75rem;
+}
+
+.text-button:hover {
+  background: transparent;
+  color: #b42318;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 22px;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    padding-top: 28px;
+  }
+
+  .add-kid {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-form {
+    flex-direction: column;
+  }
+
+  .transaction-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .description-field {
+    grid-column: 1 / -1;
+  }
+
+  .transaction-form button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 470px) {
+  .account-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .transaction-form {
+    grid-template-columns: 1fr;
+  }
+
+  .description-field,
+  .transaction-form button {
+    grid-column: auto;
+  }
+}
