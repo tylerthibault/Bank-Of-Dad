@@ -7,11 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Family {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique
+  currencyName String   @default("Credits")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users    User[]
+  children Child[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  familyId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+}
+
 model Child {
   id           String        @id @default(cuid())
   name         String
+  familyId     String?
   createdAt    DateTime      @default(now())
+  family       Family?       @relation(fields: [familyId], references: [id], onDelete: Cascade)
   transactions Transaction[]
+
+  @@index([familyId])
 }
 
 model Transaction {
