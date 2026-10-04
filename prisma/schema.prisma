@@ -27,6 +27,12 @@ model Transaction {
   @@index([childId, transactedAt])
 }
 
+model AppSettings {
+  id           Int      @id @default(1)
+  currencyName String   @default("Dollars")
+  updatedAt    DateTime @updatedAt
+}
+
 enum TransactionStatus {
   POSTED
   VOIDED
