@@ -1,22 +1,38 @@
-import { addTransaction, createChild, voidTransaction } from "@/app/actions";
+import {
+  addTransaction,
+  createChild,
+  updateCurrencyName,
+  voidTransaction,
+} from "@/app/actions";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
+const number = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
+function formatAmount(amountCents: number, currencyName: string) {
+  return `${number.format(amountCents / 100)} ${currencyName}`;
+}
+
 export default async function Home() {
-  const children = await prisma.child.findMany({
-    include: {
-      transactions: {
-        orderBy: { transactedAt: "desc" },
+  const [settings, children] = await Promise.all([
+    prisma.appSettings.findUnique({
+      where: { id: 1 },
+    }),
+    prisma.child.findMany({
+      include: {
+        transactions: {
+          orderBy: { transactedAt: "desc" },
+        },
       },
-    },
-    orderBy: { createdAt: "asc" },
-  });
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+
+  const currencyName = settings?.currencyName ?? "Dollars";
 
   return (
     <main className="shell">
@@ -27,6 +43,26 @@ export default async function Home() {
           <p className="subtle">Keep track of what the kids have, without the spreadsheet.</p>
         </div>
       </header>
+
+      <section className="panel settings-panel">
+        <div>
+          <h2>Currency name</h2>
+          <p className="subtle">
+            This is only a display label. Changing it never converts or changes any balances.
+          </p>
+        </div>
+        <form action={updateCurrencyName} className="inline-form">
+          <input
+            name="currencyName"
+            defaultValue={currencyName}
+            placeholder="Dollars, Credits, Tokens..."
+            maxLength={32}
+            autoComplete="off"
+            required
+          />
+          <button type="submit">Save name</button>
+        </form>
+      </section>
 
       <section className="panel add-kid">
         <div>
@@ -42,7 +78,10 @@ export default async function Home() {
       {children.length === 0 ? (
         <section className="empty panel">
           <h2>No accounts yet</h2>
-          <p>Add the first kid above and their balance will start at $0.00.</p>
+          <p>
+            Add the first kid above and their balance will start at{" "}
+            {formatAmount(0, currencyName)}.
+          </p>
         </section>
       ) : (
         <section className="accounts">
@@ -58,7 +97,7 @@ export default async function Home() {
                     <h2>{child.name}</h2>
                   </div>
                   <strong className={balanceCents < 0 ? "balance negative" : "balance"}>
-                    {money.format(balanceCents / 100)}
+                    {formatAmount(balanceCents, currencyName)}
                   </strong>
                 </div>
 
@@ -72,7 +111,7 @@ export default async function Home() {
                     </select>
                   </label>
                   <label>
-                    Amount
+                    Amount ({currencyName})
                     <input name="amount" type="number" min="0.01" step="0.01" placeholder="10.00" required />
                   </label>
                   <label className="description-field">
@@ -111,7 +150,7 @@ export default async function Home() {
                           <div className="transaction-right">
                             <strong className={transaction.amountCents < 0 ? "negative" : "positive"}>
                               {transaction.amountCents > 0 ? "+" : ""}
-                              {money.format(transaction.amountCents / 100)}
+                              {formatAmount(transaction.amountCents, currencyName)}
                             </strong>
                             {transaction.status === "POSTED" && (
                               <form action={voidTransaction}>
