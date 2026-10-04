@@ -67,19 +67,26 @@ button {
   padding: 22px;
 }
 
+.settings-panel,
 .add-kid {
   display: flex;
   gap: 20px;
   align-items: end;
   justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.add-kid {
   margin-bottom: 22px;
 }
 
+.settings-panel h2,
 .add-kid h2,
 .empty h2 {
   margin: 0 0 4px;
 }
 
+.settings-panel p,
 .add-kid p,
 .empty p {
   margin: 0;
@@ -88,6 +95,10 @@ button {
 .inline-form {
   display: flex;
   gap: 10px;
+}
+
+.settings-panel .inline-form {
+  min-width: min(100%, 360px);
 }
 
 input,
@@ -157,7 +168,7 @@ button:hover {
 
 .transaction-form {
   display: grid;
-  grid-template-columns: 150px 150px 1fr auto;
+  grid-template-columns: 150px 190px 1fr auto;
   gap: 12px;
   align-items: end;
   padding: 16px;
@@ -256,6 +267,7 @@ button:hover {
     padding-top: 28px;
   }
 
+  .settings-panel,
   .add-kid {
     align-items: stretch;
     flex-direction: column;
@@ -263,6 +275,10 @@ button:hover {
 
   .inline-form {
     flex-direction: column;
+  }
+
+  .settings-panel .inline-form {
+    min-width: 0;
   }
 
   .transaction-form {
