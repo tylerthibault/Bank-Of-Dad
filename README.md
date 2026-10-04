@@ -16,7 +16,10 @@ A small, self-hosted family ledger for tracking virtual money for kids.
 - Add deposits and withdrawals
 - View transaction history
 - Void transactions without erasing the audit trail
+- Rename the display currency at any time (for example: Dollars, Credits, Tokens)
 - Money is stored as integer cents to avoid floating-point rounding issues
+
+The currency name is cosmetic only. Changing it relabels all displayed balances and transactions without converting or modifying any stored amounts.
 
 > Authentication is intentionally not included in the first scaffold. Keep the app private (for example, behind Twingate or another access layer) until parent login is added.
 
