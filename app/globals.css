@@ -128,7 +128,7 @@ button {
 .add-kid {
   display: flex;
   gap: 20px;
-  align-items: end;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 14px;
 }
@@ -226,7 +226,7 @@ button:hover {
   display: grid;
   grid-template-columns: 150px 190px 1fr auto;
   gap: 12px;
-  align-items: end;
+  align-items: flex-end;
   padding: 16px;
   border-radius: 16px;
   background: #f7f9fc;
@@ -294,7 +294,7 @@ button:hover {
 }
 
 .transaction-right {
-  align-items: end;
+  align-items: flex-end;
 }
 
 .transaction.voided {
