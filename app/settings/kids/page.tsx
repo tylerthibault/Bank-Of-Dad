@@ -1,9 +1,18 @@
 import Link from "next/link";
-import { createChild } from "@/app/actions";
+import { createChild, setChildBalance } from "@/app/actions";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+const number = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+function formatAmount(amountCents: number, currencyName: string) {
+  return `${number.format(amountCents / 100)} ${currencyName}`;
+}
 
 export default async function ManageKidsPage() {
   const user = await requireUser();
@@ -13,6 +22,12 @@ export default async function ManageKidsPage() {
     include: {
       children: {
         where: { familyId: user.familyId },
+        include: {
+          transactions: {
+            where: { status: "POSTED" },
+            select: { amountCents: true },
+          },
+        },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -27,7 +42,7 @@ export default async function ManageKidsPage() {
           </Link>
           <p className="eyebrow">Family members</p>
           <h1>Manage kids</h1>
-          <p className="subtle">Add a kid account to {family.name}.</p>
+          <p className="subtle">Add kids and set their balances for {family.name}.</p>
         </div>
       </header>
 
@@ -35,17 +50,24 @@ export default async function ManageKidsPage() {
         <div>
           <h2>Add a kid</h2>
           <p className="subtle">
-            New kid accounts start with a zero balance.
+            You can optionally give them a starting balance when you create the account.
           </p>
         </div>
 
-        <form action={createChild} className="inline-form">
+        <form action={createChild} className="inline-form add-kid-form">
           <input
             name="name"
             placeholder="Kid's name"
             maxLength={60}
             autoComplete="off"
             required
+          />
+          <input
+            name="startingAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder={`Starting ${family.currencyName}`}
           />
           <button type="submit">Add kid</button>
         </form>
@@ -63,14 +85,42 @@ export default async function ManageKidsPage() {
           <p className="subtle">No kid accounts yet.</p>
         ) : (
           <div className="manage-list">
-            {family.children.map((child) => (
-              <div className="manage-row" key={child.id}>
-                <strong>{child.name}</strong>
-                <Link className="text-link" href={`/kids/${child.id}`}>
-                  View ledger
-                </Link>
-              </div>
-            ))}
+            {family.children.map((child) => {
+              const balanceCents = child.transactions.reduce(
+                (sum, transaction) => sum + transaction.amountCents,
+                0,
+              );
+
+              return (
+                <div className="manage-kid-row" key={child.id}>
+                  <div className="manage-kid-summary">
+                    <div>
+                      <strong>{child.name}</strong>
+                      <span>{formatAmount(balanceCents, family.currencyName)}</span>
+                    </div>
+                    <Link className="text-link" href={`/kids/${child.id}`}>
+                      View ledger
+                    </Link>
+                  </div>
+
+                  <form action={setChildBalance} className="set-balance-form">
+                    <input type="hidden" name="childId" value={child.id} />
+                    <label>
+                      Set balance
+                      <input
+                        name="balance"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        defaultValue={(balanceCents / 100).toFixed(2)}
+                        required
+                      />
+                    </label>
+                    <button type="submit">Set amount</button>
+                  </form>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
