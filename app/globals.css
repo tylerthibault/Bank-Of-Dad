@@ -485,3 +485,255 @@ button:hover {
     align-items: flex-start;
   }
 }
+
+
+/* Simplified dashboard and settings navigation */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 12px;
+  background: #172033;
+  color: #fff;
+  padding: 11px 16px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.button-link:hover {
+  background: #273650;
+}
+
+.button-link.secondary-button {
+  background: #fff;
+  color: #172033;
+  border: 1px solid #d7dde6;
+}
+
+.button-link.secondary-button:hover {
+  background: #f7f9fc;
+}
+
+.kid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.kid-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e1e6ee;
+  border-radius: 22px;
+  box-shadow: 0 14px 40px rgba(32, 45, 72, 0.07);
+  padding: 22px;
+}
+
+.kid-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.kid-card-top h2 {
+  margin: 4px 0 0;
+  font-size: 1.8rem;
+}
+
+.kid-card-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.quick-transaction {
+  flex: 1;
+  position: relative;
+}
+
+.quick-transaction summary {
+  list-style: none;
+  cursor: pointer;
+  border-radius: 12px;
+  background: #172033;
+  color: #fff;
+  padding: 11px 16px;
+  font-weight: 800;
+  text-align: center;
+  user-select: none;
+}
+
+.quick-transaction summary::-webkit-details-marker {
+  display: none;
+}
+
+.quick-transaction[open] summary {
+  border-radius: 12px 12px 0 0;
+}
+
+.quick-transaction-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #dfe5ed;
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: #f7f9fc;
+}
+
+.quick-transaction-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #536074;
+}
+
+.compact-topbar {
+  margin-bottom: 20px;
+}
+
+.compact-topbar h1 {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #4f5c70;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.back-link:hover,
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.settings-card h2,
+.settings-link-card h2 {
+  margin: 5px 0 8px;
+}
+
+.compact-stack {
+  margin-top: 18px;
+}
+
+.settings-link-card {
+  display: flex;
+  min-height: 170px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  text-decoration: none;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.settings-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(32, 45, 72, 0.1);
+}
+
+.settings-link-card > span {
+  color: #245fc4;
+  font-weight: 800;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.section-heading h2 {
+  margin: 5px 0 0;
+}
+
+.manage-list {
+  display: grid;
+}
+
+.manage-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.manage-row:last-child {
+  border-bottom: 0;
+}
+
+.text-link {
+  color: #245fc4;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.ledger-add {
+  margin-bottom: 18px;
+}
+
+.ledger-add h2 {
+  margin: 5px 0 16px;
+}
+
+.ledger-panel .history-heading {
+  margin-bottom: 4px;
+}
+
+.empty .button-link {
+  margin-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .header-actions {
+    align-items: stretch;
+  }
+
+  .kid-grid,
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kid-card-actions {
+    flex-direction: column;
+  }
+
+  .kid-card-actions > *,
+  .kid-card-actions .button-link {
+    width: 100%;
+  }
+}
+
+@media (max-width: 470px) {
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .kid-card-top,
+  .manage-row {
+    flex-direction: column;
+  }
+
+  .kid-card-top .balance {
+    margin-top: 8px;
+  }
+}
