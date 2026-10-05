@@ -24,20 +24,84 @@ export async function updateCurrencyName(formData: FormData) {
 export async function createChild(formData: FormData) {
   const user = await requireUser();
   const name = String(formData.get("name") ?? "").trim().slice(0, 60);
+  const startingAmount = Number(formData.get("startingAmount") ?? 0);
 
-  if (!name) {
+  if (!name || !Number.isFinite(startingAmount) || startingAmount < 0) {
     return;
   }
 
-  await prisma.child.create({
-    data: {
-      name,
-      familyId: user.familyId,
-    },
+  const startingAmountCents = Math.round(startingAmount * 100);
+
+  await prisma.$transaction(async (tx) => {
+    const child = await tx.child.create({
+      data: {
+        name,
+        familyId: user.familyId,
+      },
+    });
+
+    if (startingAmountCents > 0) {
+      await tx.transaction.create({
+        data: {
+          childId: child.id,
+          amountCents: startingAmountCents,
+          description: "Starting balance",
+        },
+      });
+    }
   });
 
   revalidatePath("/dashboard");
   revalidatePath("/settings/kids");
+}
+
+export async function setChildBalance(formData: FormData) {
+  const user = await requireUser();
+  const childId = String(formData.get("childId") ?? "");
+  const targetAmount = Number(formData.get("balance"));
+
+  if (!childId || !Number.isFinite(targetAmount) || targetAmount < 0) {
+    return;
+  }
+
+  const child = await prisma.child.findFirst({
+    where: {
+      id: childId,
+      familyId: user.familyId,
+    },
+    select: {
+      id: true,
+      transactions: {
+        where: { status: "POSTED" },
+        select: { amountCents: true },
+      },
+    },
+  });
+
+  if (!child) {
+    return;
+  }
+
+  const currentBalanceCents = child.transactions.reduce(
+    (sum, transaction) => sum + transaction.amountCents,
+    0,
+  );
+  const targetBalanceCents = Math.round(targetAmount * 100);
+  const adjustmentCents = targetBalanceCents - currentBalanceCents;
+
+  if (adjustmentCents !== 0) {
+    await prisma.transaction.create({
+      data: {
+        childId: child.id,
+        amountCents: adjustmentCents,
+        description: "Balance adjustment",
+      },
+    });
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/settings/kids");
+  revalidatePath(`/kids/${child.id}`);
 }
 
 export async function addTransaction(formData: FormData) {
