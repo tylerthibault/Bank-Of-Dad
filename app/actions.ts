@@ -18,6 +18,7 @@ export async function updateCurrencyName(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/settings");
 }
 
 export async function createChild(formData: FormData) {
@@ -36,6 +37,7 @@ export async function createChild(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/settings/kids");
 }
 
 export async function addTransaction(formData: FormData) {
@@ -72,6 +74,7 @@ export async function addTransaction(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath(`/kids/${child.id}`);
 }
 
 export async function voidTransaction(formData: FormData) {
@@ -89,7 +92,10 @@ export async function voidTransaction(formData: FormData) {
         familyId: user.familyId,
       },
     },
-    select: { id: true },
+    select: {
+      id: true,
+      childId: true,
+    },
   });
 
   if (!transaction) {
@@ -102,4 +108,5 @@ export async function voidTransaction(formData: FormData) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath(`/kids/${transaction.childId}`);
 }
