@@ -47,6 +47,8 @@ export default async function KidLedgerPage({
     notFound();
   }
 
+  const family = child.family;
+
   const posted = child.transactions.filter(
     (transaction) => transaction.status === "POSTED",
   );
@@ -64,11 +66,11 @@ export default async function KidLedgerPage({
           </Link>
           <p className="eyebrow">Kid ledger</p>
           <h1>{child.name}</h1>
-          <p className="subtle">{child.family.name}</p>
+          <p className="subtle">{family.name}</p>
         </div>
 
         <strong className={balanceCents < 0 ? "balance negative" : "balance"}>
-          {formatAmount(balanceCents, child.family.currencyName)}
+          {formatAmount(balanceCents, family.currencyName)}
         </strong>
       </header>
 
@@ -90,7 +92,7 @@ export default async function KidLedgerPage({
           </label>
 
           <label>
-            Amount ({child.family.currencyName})
+            Amount ({family.currencyName})
             <input
               name="amount"
               type="number"
@@ -154,7 +156,7 @@ export default async function KidLedgerPage({
                     {transaction.amountCents > 0 ? "+" : ""}
                     {formatAmount(
                       transaction.amountCents,
-                      child.family.currencyName,
+                      family.currencyName,
                     )}
                   </strong>
 
