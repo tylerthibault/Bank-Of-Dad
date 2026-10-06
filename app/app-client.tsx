@@ -66,6 +66,10 @@ export default function AppClient() {
 
     const source = new EventSource("/api/events");
 
+    source.addEventListener("ready", () => {
+      router.refresh();
+    });
+
     source.addEventListener("refresh", (event) => {
       refresh((event as MessageEvent<string>).data, true);
     });
