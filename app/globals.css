@@ -1161,3 +1161,12 @@ button:hover {
     flex-direction: column;
   }
 }
+
+
+.login-secondary-actions {
+  margin-top: 14px;
+}
+
+.login-secondary-actions .button-link {
+  width: 100%;
+}
