@@ -49,6 +49,12 @@ export default async function LoginPage({
           <button type="submit">Log in</button>
         </form>
 
+        <div className="login-secondary-actions">
+          <Link className="button-link secondary-button" href="/wall">
+            Register device
+          </Link>
+        </div>
+
         <p className="auth-footer">
           Need a parent account? <Link href="/register">Create or join a family</Link>
         </p>
