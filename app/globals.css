@@ -800,3 +800,364 @@ button:hover {
     flex-direction: column;
   }
 }
+
+
+.kid-admin-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.alert.success {
+  background: #ecfdf3;
+  border: 1px solid #b7e4c7;
+  color: #166534;
+}
+
+.device-section + .device-section {
+  margin-top: 18px;
+}
+
+.device-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.device-row:last-child {
+  border-bottom: 0;
+}
+
+.device-row > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.device-row span {
+  color: #687385;
+  font-size: 0.86rem;
+}
+
+.device-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.wall-shell {
+  width: min(1400px, calc(100% - 40px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 42px 0 60px;
+}
+
+.wall-centered {
+  display: grid;
+  place-items: center;
+}
+
+.wall-pair-card {
+  width: min(560px, 100%);
+  padding: 36px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dfe5ed;
+  border-radius: 28px;
+  box-shadow: 0 22px 60px rgba(32, 45, 72, 0.12);
+  text-align: center;
+}
+
+.wall-pair-card h1 {
+  margin: 6px 0 10px;
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  letter-spacing: -0.045em;
+}
+
+.wall-brand {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wall-pair-form {
+  text-align: left;
+}
+
+.pending-icon {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  background: #eaf7ee;
+  color: #137333;
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.wall-instructions {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f6f8fb;
+  color: #536074;
+  line-height: 1.5;
+}
+
+.wall-pending-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.wall-header,
+.wall-account-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.wall-header h1,
+.wall-account-header h1 {
+  margin: 4px 0 0;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  letter-spacing: -0.055em;
+}
+
+.wall-device-label {
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #dfe5ed;
+  color: #687385;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.wall-kid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.wall-kid-card {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dfe5ed;
+  box-shadow: 0 18px 50px rgba(32, 45, 72, 0.09);
+  text-decoration: none;
+}
+
+.wall-kid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 60px rgba(32, 45, 72, 0.13);
+}
+
+.wall-kid-card h2 {
+  margin: 6px 0 0;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  letter-spacing: -0.045em;
+}
+
+.wall-balance {
+  display: block;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.wall-open-account {
+  color: #245fc4;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.wall-empty {
+  padding: 60px 30px;
+  border-radius: 28px;
+  background: #fff;
+  text-align: center;
+}
+
+.wall-back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #4f5c70;
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.wall-balance-block {
+  display: grid;
+  gap: 8px;
+  text-align: right;
+}
+
+.wall-balance-block > span {
+  color: #687385;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.wall-account-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 22px;
+}
+
+.wall-transaction-card,
+.wall-ledger-card {
+  padding: 28px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dfe5ed;
+  box-shadow: 0 18px 50px rgba(32, 45, 72, 0.08);
+}
+
+.wall-transaction-card h2,
+.wall-ledger-card h2 {
+  margin: 5px 0 8px;
+  font-size: 2rem;
+}
+
+.wall-transaction-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.wall-transaction-form label {
+  display: grid;
+  gap: 7px;
+  color: #536074;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.wall-transaction-form input,
+.wall-transaction-form select {
+  min-height: 54px;
+  font-size: 1.05rem;
+}
+
+.wall-transaction-form button {
+  min-height: 56px;
+  font-size: 1.05rem;
+}
+
+.wall-ledger-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.wall-ledger-heading > span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #edf1f6;
+  color: #687385;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.wall-ledger-list {
+  display: grid;
+}
+
+.wall-ledger-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.wall-ledger-row:last-child {
+  border-bottom: 0;
+}
+
+.wall-ledger-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.wall-ledger-row span {
+  color: #7a8493;
+  font-size: 0.84rem;
+}
+
+.wall-ledger-row.voided {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+@media (max-width: 900px) {
+  .wall-kid-grid,
+  .wall-account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wall-kid-card {
+    min-height: 220px;
+  }
+
+  .wall-account-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wall-balance-block {
+    text-align: left;
+  }
+}
+
+@media (max-width: 760px) {
+  .kid-admin-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .device-row,
+  .wall-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .device-actions,
+  .wall-pending-actions {
+    width: 100%;
+  }
+
+  .device-actions form,
+  .device-actions button,
+  .wall-pending-actions form,
+  .wall-pending-actions .button-link,
+  .wall-pending-actions button {
+    width: 100%;
+  }
+
+  .wall-shell {
+    width: min(100% - 24px, 1400px);
+    padding-top: 24px;
+  }
+
+  .wall-pair-card {
+    padding: 26px 20px;
+  }
+
+  .wall-ledger-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
