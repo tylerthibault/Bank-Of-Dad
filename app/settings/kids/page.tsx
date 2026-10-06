@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createChild, setChildBalance } from "@/app/actions";
+import { createChild, setChildBalance, setChildPin } from "@/app/actions";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -103,21 +103,44 @@ export default async function ManageKidsPage() {
                     </Link>
                   </div>
 
-                  <form action={setChildBalance} className="set-balance-form">
-                    <input type="hidden" name="childId" value={child.id} />
-                    <label>
-                      Set balance
-                      <input
-                        name="balance"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        defaultValue={(balanceCents / 100).toFixed(2)}
-                        required
-                      />
-                    </label>
-                    <button type="submit">Set amount</button>
-                  </form>
+                  <div className="kid-admin-controls">
+                    <form action={setChildBalance} className="set-balance-form">
+                      <input type="hidden" name="childId" value={child.id} />
+                      <label>
+                        Set balance
+                        <input
+                          name="balance"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          defaultValue={(balanceCents / 100).toFixed(2)}
+                          required
+                        />
+                      </label>
+                      <button type="submit">Set amount</button>
+                    </form>
+
+                    <form action={setChildPin} className="set-balance-form">
+                      <input type="hidden" name="childId" value={child.id} />
+                      <label>
+                        {child.pinHash ? "Change 4-digit PIN" : "Set 4-digit PIN"}
+                        <input
+                          name="pin"
+                          type="password"
+                          inputMode="numeric"
+                          pattern="[0-9]{4}"
+                          minLength={4}
+                          maxLength={4}
+                          placeholder="••••"
+                          autoComplete="new-password"
+                          required
+                        />
+                      </label>
+                      <button type="submit">
+                        {child.pinHash ? "Change PIN" : "Set PIN"}
+                      </button>
+                    </form>
+                  </div>
                 </div>
               );
             })}
