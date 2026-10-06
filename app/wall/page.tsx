@@ -75,9 +75,11 @@ export default async function WallPage({
 
   if (registered.status === "PENDING") {
     return (
-      <main className="wall-shell wall-centered">
-        <section className="wall-pair-card">
-          <div className="pending-icon">✓</div>
+      <>
+        <meta httpEquiv="refresh" content="5" />
+        <main className="wall-shell wall-centered">
+          <section className="wall-pair-card">
+            <div className="pending-icon">✓</div>
           <p className="eyebrow">Registration requested</p>
           <h1>Waiting for a parent</h1>
           <p className="subtle">
@@ -100,8 +102,9 @@ export default async function WallPage({
               </button>
             </form>
           </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      </>
     );
   }
 
