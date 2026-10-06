@@ -12,6 +12,7 @@ import {
   getRegisteredDevice,
   setDeviceCookie,
 } from "@/lib/device-auth";
+import { broadcastFamily } from "@/lib/realtime";
 
 function normalizeFamilyCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -60,6 +61,7 @@ export async function requestDeviceRegistration(formData: FormData) {
   });
 
   await setDeviceCookie(token);
+  broadcastFamily(family.id);
   redirect("/wall");
 }
 
@@ -84,6 +86,7 @@ export async function approveDevice(formData: FormData) {
   });
 
   revalidatePath("/settings/devices");
+  broadcastFamily(user.familyId);
 }
 
 export async function rejectDevice(formData: FormData) {
@@ -103,6 +106,7 @@ export async function rejectDevice(formData: FormData) {
   });
 
   revalidatePath("/settings/devices");
+  broadcastFamily(user.familyId);
 }
 
 export async function revokeDevice(formData: FormData) {
@@ -125,6 +129,7 @@ export async function revokeDevice(formData: FormData) {
   });
 
   revalidatePath("/settings/devices");
+  broadcastFamily(user.familyId);
 }
 
 export async function clearWallDevice() {
@@ -244,6 +249,7 @@ export async function wallTransaction(formData: FormData) {
   revalidatePath(`/wall/kids/${child.id}`);
   revalidatePath("/dashboard");
   revalidatePath(`/kids/${child.id}`);
+  broadcastFamily(device.familyId);
 
   redirect(`/wall/kids/${child.id}?success=1`);
 }
