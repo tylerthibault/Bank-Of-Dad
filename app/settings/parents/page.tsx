@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { setParentPin } from "@/app/actions";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -20,10 +21,13 @@ export default async function ManageParentsPage() {
           id: true,
           name: true,
           email: true,
+          pinHash: true,
         },
       },
     },
   });
+
+  const currentParent = family.users.find((parent) => parent.id === user.id);
 
   return (
     <main className="shell">
@@ -34,7 +38,7 @@ export default async function ManageParentsPage() {
           </Link>
           <p className="eyebrow">Family access</p>
           <h1>Manage parents</h1>
-          <p className="subtle">See who can manage {family.name}.</p>
+          <p className="subtle">See who can manage {family.name} and set your wall-dashboard PIN.</p>
         </div>
       </header>
 
@@ -49,18 +53,54 @@ export default async function ManageParentsPage() {
         </article>
 
         <article className="panel">
-          <p className="eyebrow">Current access</p>
-          <h2>{family.users.length} parent{family.users.length === 1 ? "" : "s"}</h2>
+          <p className="eyebrow">Your parent PIN</p>
+          <h2>{currentParent?.pinHash ? "PIN set" : "No PIN set"}</h2>
+          <p className="subtle">
+            Your 4-digit parent PIN authorizes adding money from a registered wall device.
+          </p>
 
-          <div className="parent-list">
-            {family.users.map((parent) => (
-              <div className="parent-chip" key={parent.id}>
-                <strong>{parent.name}</strong>
+          <form action={setParentPin} className="stack compact-stack">
+            <label>
+              {currentParent?.pinHash ? "Change 4-digit PIN" : "Set 4-digit PIN"}
+              <input
+                name="pin"
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]{4}"
+                minLength={4}
+                maxLength={4}
+                placeholder="••••"
+                autoComplete="new-password"
+                required
+              />
+            </label>
+            <button type="submit">
+              {currentParent?.pinHash ? "Change PIN" : "Set PIN"}
+            </button>
+          </form>
+        </article>
+      </section>
+
+      <section className="panel">
+        <p className="eyebrow">Current access</p>
+        <h2>{family.users.length} parent{family.users.length === 1 ? "" : "s"}</h2>
+
+        <div className="parent-list">
+          {family.users.map((parent) => (
+            <div className="parent-chip" key={parent.id}>
+              <div className="parent-access-copy">
+                <strong>
+                  {parent.name}
+                  {parent.id === user.id ? " (you)" : ""}
+                </strong>
                 <span>{parent.email}</span>
               </div>
-            ))}
-          </div>
-        </article>
+              <span className={parent.pinHash ? "status-pill ready" : "status-pill"}>
+                {parent.pinHash ? "Parent PIN set" : "No parent PIN"}
+              </span>
+            </div>
+          ))}
+        </div>
       </section>
     </main>
   );
