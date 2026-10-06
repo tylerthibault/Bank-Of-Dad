@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
@@ -173,4 +174,37 @@ export async function voidTransaction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath(`/kids/${transaction.childId}`);
+}
+
+
+export async function setChildPin(formData: FormData) {
+  const user = await requireUser();
+  const childId = String(formData.get("childId") ?? "");
+  const pin = String(formData.get("pin") ?? "").trim();
+
+  if (!childId || !/^\d{4}$/.test(pin)) {
+    return;
+  }
+
+  const child = await prisma.child.findFirst({
+    where: {
+      id: childId,
+      familyId: user.familyId,
+    },
+    select: { id: true },
+  });
+
+  if (!child) {
+    return;
+  }
+
+  const pinHash = await bcrypt.hash(pin, 12);
+
+  await prisma.child.update({
+    where: { id: child.id },
+    data: { pinHash },
+  });
+
+  revalidatePath("/settings/kids");
+  revalidatePath("/wall");
 }
