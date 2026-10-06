@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { broadcastFamily } from "@/lib/realtime";
 
 export async function updateCurrencyName(formData: FormData) {
   const user = await requireUser();
@@ -20,6 +21,7 @@ export async function updateCurrencyName(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/settings");
+  broadcastFamily(user.familyId);
 }
 
 export async function createChild(formData: FormData) {
@@ -54,6 +56,7 @@ export async function createChild(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/settings/kids");
+  broadcastFamily(user.familyId);
 }
 
 export async function setChildBalance(formData: FormData) {
@@ -98,6 +101,8 @@ export async function setChildBalance(formData: FormData) {
         description: "Balance adjustment",
       },
     });
+
+    broadcastFamily(user.familyId);
   }
 
   revalidatePath("/dashboard");
@@ -140,6 +145,7 @@ export async function addTransaction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath(`/kids/${child.id}`);
+  broadcastFamily(user.familyId);
 }
 
 export async function voidTransaction(formData: FormData) {
@@ -174,8 +180,8 @@ export async function voidTransaction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath(`/kids/${transaction.childId}`);
+  broadcastFamily(user.familyId);
 }
-
 
 export async function setChildPin(formData: FormData) {
   const user = await requireUser();
@@ -207,8 +213,8 @@ export async function setChildPin(formData: FormData) {
 
   revalidatePath("/settings/kids");
   revalidatePath("/wall");
+  broadcastFamily(user.familyId);
 }
-
 
 export async function setParentPin(formData: FormData) {
   const user = await requireUser();
@@ -226,4 +232,5 @@ export async function setParentPin(formData: FormData) {
   });
 
   revalidatePath("/settings/parents");
+  broadcastFamily(user.familyId);
 }
