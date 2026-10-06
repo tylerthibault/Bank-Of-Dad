@@ -41,6 +41,16 @@ export default async function WallKidPage({
         select: {
           name: true,
           currencyName: true,
+          users: {
+            where: {
+              pinHash: {
+                not: null,
+              },
+            },
+            select: {
+              id: true,
+            },
+          },
         },
       },
       transactions: {
@@ -97,7 +107,7 @@ export default async function WallKidPage({
           <p className="eyebrow">New transaction</p>
           <h2>Update your account</h2>
           <p className="subtle">
-            Your 4-digit PIN is required before anything is added to the ledger.
+            Spending requires {child.name}&apos;s kid PIN. Adding money requires a parent PIN.
           </p>
 
           {query.error ? <div className="alert error">{query.error}</div> : null}
@@ -107,60 +117,69 @@ export default async function WallKidPage({
 
           {!child.pinHash ? (
             <div className="wall-instructions">
-              A parent needs to set a PIN for this account in Settings → Manage kids.
+              Kid spending is currently locked because a parent has not set a kid PIN yet.
             </div>
-          ) : (
-            <form action={wallTransaction} className="wall-transaction-form">
-              <input type="hidden" name="childId" value={child.id} />
+          ) : null}
 
-              <label>
-                Transaction
-                <select name="kind" defaultValue="withdrawal">
-                  <option value="withdrawal">Spend money</option>
-                  <option value="deposit">Add money</option>
-                </select>
-              </label>
+          {family.users.length === 0 ? (
+            <div className="wall-instructions">
+              Adding money is currently locked because no parent has set a parent PIN yet.
+            </div>
+          ) : null}
 
-              <label>
-                Amount ({family.currencyName})
-                <input
-                  name="amount"
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  placeholder="0.00"
-                  required
-                />
-              </label>
+          <form action={wallTransaction} className="wall-transaction-form">
+            <input type="hidden" name="childId" value={child.id} />
 
-              <label>
-                What was it for?
-                <input
-                  name="description"
-                  placeholder="Movie, snack, chore money..."
-                  maxLength={120}
-                  autoComplete="off"
-                />
-              </label>
+            <label>
+              Transaction
+              <select name="kind" defaultValue="withdrawal">
+                <option value="withdrawal">Spend money — kid PIN</option>
+                <option value="deposit">Add money — parent PIN</option>
+              </select>
+            </label>
 
-              <label>
-                4-digit PIN
-                <input
-                  name="pin"
-                  type="password"
-                  inputMode="numeric"
-                  pattern="[0-9]{4}"
-                  minLength={4}
-                  maxLength={4}
-                  placeholder="••••"
-                  autoComplete="off"
-                  required
-                />
-              </label>
+            <label>
+              Amount ({family.currencyName})
+              <input
+                name="amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </label>
 
-              <button type="submit">Save transaction</button>
-            </form>
-          )}
+            <label>
+              What was it for?
+              <input
+                name="description"
+                placeholder="Movie, snack, chore money..."
+                maxLength={120}
+                autoComplete="off"
+              />
+            </label>
+
+            <label>
+              Authorization PIN
+              <input
+                name="pin"
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]{4}"
+                minLength={4}
+                maxLength={4}
+                placeholder="••••"
+                autoComplete="off"
+                required
+              />
+              <span className="field-help">
+                Kid PIN for spending. Parent PIN for adding money.
+              </span>
+            </label>
+
+            <button type="submit">Save transaction</button>
+          </form>
         </article>
 
         <article className="wall-ledger-card">
@@ -193,6 +212,7 @@ export default async function WallKidPage({
                         day: "numeric",
                       })}
                       {transaction.source === "KID_DEVICE" ? " · Kid entry" : ""}
+                      {transaction.source === "PARENT_DEVICE" ? " · Parent-approved wall entry" : ""}
                       {transaction.status === "VOIDED" ? " · Voided" : ""}
                     </span>
                   </div>
