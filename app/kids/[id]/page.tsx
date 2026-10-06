@@ -143,6 +143,7 @@ export default async function KidLedgerPage({
                       day: "numeric",
                       year: "numeric",
                     })}
+                    {transaction.source === "KID_DEVICE" ? " · Kid entry" : ""}
                     {transaction.status === "VOIDED" ? " · Voided" : ""}
                   </span>
                 </div>
