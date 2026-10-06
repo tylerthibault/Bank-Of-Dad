@@ -24,6 +24,7 @@ export default async function SettingsPage() {
         select: {
           children: true,
           users: true,
+          devices: true,
         },
       },
     },
@@ -96,6 +97,17 @@ export default async function SettingsPage() {
             <p className="subtle">See who has access and how another parent can join.</p>
           </div>
           <span>{family._count.users} parent{family._count.users === 1 ? "" : "s"} →</span>
+        </Link>
+
+        <Link className="panel settings-link-card" href="/settings/devices">
+          <div>
+            <p className="eyebrow">Wall dashboard</p>
+            <h2>Registered devices</h2>
+            <p className="subtle">
+              Approve wall displays and revoke devices that should no longer stay signed in.
+            </p>
+          </div>
+          <span>{family._count.devices} device{family._count.devices === 1 ? "" : "s"} →</span>
         </Link>
       </section>
     </main>
