@@ -146,11 +146,15 @@ export async function wallTransaction(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim().slice(0, 120);
 
   if (!childId || !/^\d{4}$/.test(pin)) {
-    fail(`/wall/kids/${childId}`, "Enter the child's 4-digit PIN.");
+    fail(`/wall/kids/${childId}`, "Enter a 4-digit authorization PIN.");
   }
 
   if (!Number.isFinite(amount) || amount <= 0) {
     fail(`/wall/kids/${childId}`, "Enter a valid amount.");
+  }
+
+  if (kind !== "withdrawal" && kind !== "deposit") {
+    fail(`/wall/kids/${childId}`, "Choose a valid transaction type.");
   }
 
   const child = await prisma.child.findFirst({
@@ -168,17 +172,57 @@ export async function wallTransaction(formData: FormData) {
     redirect("/wall");
   }
 
-  if (!child.pinHash) {
-    fail(
-      `/wall/kids/${child.id}`,
-      "A parent needs to set a PIN for this account first.",
-    );
-  }
+  let source: "KID_DEVICE" | "PARENT_DEVICE";
 
-  const validPin = await bcrypt.compare(pin, child.pinHash);
+  if (kind === "withdrawal") {
+    if (!child.pinHash) {
+      fail(
+        `/wall/kids/${child.id}`,
+        "A parent needs to set a kid PIN before this account can spend money.",
+      );
+    }
 
-  if (!validPin) {
-    fail(`/wall/kids/${child.id}`, "Incorrect PIN.");
+    const validKidPin = await bcrypt.compare(pin, child.pinHash);
+
+    if (!validKidPin) {
+      fail(`/wall/kids/${child.id}`, "Incorrect kid PIN.");
+    }
+
+    source = "KID_DEVICE";
+  } else {
+    const parents = await prisma.user.findMany({
+      where: {
+        familyId: device.familyId,
+        pinHash: {
+          not: null,
+        },
+      },
+      select: {
+        pinHash: true,
+      },
+    });
+
+    if (parents.length === 0) {
+      fail(
+        `/wall/kids/${child.id}`,
+        "A parent needs to set a parent PIN before money can be added from this device.",
+      );
+    }
+
+    let validParentPin = false;
+
+    for (const parent of parents) {
+      if (parent.pinHash && (await bcrypt.compare(pin, parent.pinHash))) {
+        validParentPin = true;
+        break;
+      }
+    }
+
+    if (!validParentPin) {
+      fail(`/wall/kids/${child.id}`, "Incorrect parent PIN.");
+    }
+
+    source = "PARENT_DEVICE";
   }
 
   const amountCents =
@@ -188,11 +232,11 @@ export async function wallTransaction(formData: FormData) {
     data: {
       childId: child.id,
       deviceId: device.id,
-      source: "KID_DEVICE",
+      source,
       amountCents,
       description:
         description ||
-        (kind === "withdrawal" ? "Kid purchase" : "Kid deposit"),
+        (kind === "withdrawal" ? "Kid purchase" : "Parent-authorized deposit"),
     },
   });
 
