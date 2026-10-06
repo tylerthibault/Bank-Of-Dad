@@ -1170,3 +1170,42 @@ button:hover {
 .login-secondary-actions .button-link {
   width: 100%;
 }
+
+
+.field-help {
+  color: #7a8493;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.parent-access-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.parent-access-copy span {
+  text-align: left;
+}
+
+.status-pill {
+  align-self: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f4f5f7;
+  color: #687385;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-pill.ready {
+  background: #ecfdf3;
+  color: #166534;
+}
+
+@media (max-width: 470px) {
+  .status-pill {
+    align-self: flex-start;
+  }
+}
