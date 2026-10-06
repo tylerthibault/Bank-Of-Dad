@@ -25,6 +25,7 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
+  pinHash      String?
   familyId     String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -94,6 +95,7 @@ enum DeviceStatus {
 enum TransactionSource {
   PARENT
   KID_DEVICE
+  PARENT_DEVICE
 }
 
 enum TransactionStatus {
