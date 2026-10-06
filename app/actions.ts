@@ -208,3 +208,22 @@ export async function setChildPin(formData: FormData) {
   revalidatePath("/settings/kids");
   revalidatePath("/wall");
 }
+
+
+export async function setParentPin(formData: FormData) {
+  const user = await requireUser();
+  const pin = String(formData.get("pin") ?? "").trim();
+
+  if (!/^\d{4}$/.test(pin)) {
+    return;
+  }
+
+  const pinHash = await bcrypt.hash(pin, 12);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { pinHash },
+  });
+
+  revalidatePath("/settings/parents");
+}
