@@ -5,6 +5,7 @@ import { randomInt } from "node:crypto";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createSession, destroySession } from "@/lib/auth";
+import { broadcastFamily } from "@/lib/realtime";
 
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -163,6 +164,7 @@ export async function registerJoinFamilyAction(formData: FormData) {
     },
   });
 
+  broadcastFamily(family.id);
   await createSession(user.id);
   redirect("/dashboard");
 }
