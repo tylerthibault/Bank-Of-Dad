@@ -17,6 +17,7 @@ model Family {
 
   users    User[]
   children Child[]
+  devices  RegisteredDevice[]
 }
 
 model User {
@@ -37,6 +38,7 @@ model Child {
   id           String        @id @default(cuid())
   name         String
   familyId     String?
+  pinHash      String?
   createdAt    DateTime      @default(now())
   family       Family?       @relation(fields: [familyId], references: [id], onDelete: Cascade)
   transactions Transaction[]
@@ -44,10 +46,29 @@ model Child {
   @@index([familyId])
 }
 
+model RegisteredDevice {
+  id         String       @id @default(cuid())
+  familyId   String
+  family     Family       @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  name       String
+  tokenHash  String       @unique
+  status     DeviceStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+  approvedAt DateTime?
+  lastSeenAt DateTime?
+
+  transactions Transaction[]
+
+  @@index([familyId, status])
+}
+
 model Transaction {
   id           String            @id @default(cuid())
   childId      String
   child        Child             @relation(fields: [childId], references: [id], onDelete: Cascade)
+  deviceId     String?
+  device       RegisteredDevice? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  source       TransactionSource @default(PARENT)
   amountCents  Int
   description  String
   transactedAt DateTime          @default(now())
@@ -55,12 +76,24 @@ model Transaction {
   createdAt    DateTime          @default(now())
 
   @@index([childId, transactedAt])
+  @@index([deviceId])
 }
 
 model AppSettings {
   id           Int      @id @default(1)
   currencyName String   @default("Dollars")
   updatedAt    DateTime @updatedAt
+}
+
+enum DeviceStatus {
+  PENDING
+  APPROVED
+  REVOKED
+}
+
+enum TransactionSource {
+  PARENT
+  KID_DEVICE
 }
 
 enum TransactionStatus {
