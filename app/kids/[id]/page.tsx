@@ -144,6 +144,7 @@ export default async function KidLedgerPage({
                       year: "numeric",
                     })}
                     {transaction.source === "KID_DEVICE" ? " · Kid entry" : ""}
+                    {transaction.source === "PARENT_DEVICE" ? " · Parent-approved wall entry" : ""}
                     {transaction.status === "VOIDED" ? " · Voided" : ""}
                   </span>
                 </div>
