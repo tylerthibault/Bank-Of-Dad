@@ -33,7 +33,7 @@ The currency name is cosmetic only. Changing it relabels all displayed balances 
    ```
 4. Apply the database migration:
    ```bash
-   npm run db:deploy
+   npm run db:push
    ```
 5. Start development:
    ```bash
@@ -48,7 +48,7 @@ The currency name is cosmetic only. Changing it relabels all displayed balances 
 4. Add the PostgreSQL connection string as `DATABASE_URL`.
 5. Deploy.
 
-The container runs `prisma migrate deploy` automatically before starting Next.js.
+The container runs `prisma db push` automatically before starting Next.js.
 
 
 ## Password changes and recovery (no email required)
