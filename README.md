@@ -21,7 +21,7 @@ A small, self-hosted family ledger for tracking virtual money for kids.
 
 The currency name is cosmetic only. Changing it relabels all displayed balances and transactions without converting or modifying any stored amounts.
 
-> Authentication is intentionally not included in the first scaffold. Keep the app private (for example, behind Twingate or another access layer) until parent login is added.
+> Parent authentication is available. Keep the app behind an appropriate access layer (for example, Twingate) and protect the Coolify administration console.
 
 ## Local setup
 
@@ -49,3 +49,21 @@ The currency name is cosmetic only. Changing it relabels all displayed balances 
 5. Deploy.
 
 The container runs `prisma migrate deploy` automatically before starting Next.js.
+
+
+## Password changes and recovery (no email required)
+
+- A signed-in parent can open **Settings → Change password**, enter their current password, and choose a new one.
+- If locked out, select **Forgot password?** on the login page.
+- A server administrator opens a terminal **inside the running Bank of Dad application container** in Coolify and runs:
+
+  ```bash
+  npm run password:recovery -- parent@example.com
+  ```
+
+- The command prints a signed, 15-minute recovery code. Copy it into **I have a recovery code** in the application and set a new password. The code is single-use: using it updates the user's session version, invalidating the code and all earlier login sessions.
+- Treat the code as a secret. Do not paste it into chats or screenshots. Recovery codes are never emailed, and the website itself cannot generate them.
+- The application container needs `DATABASE_URL` and `AUTH_SECRET` (minimum 32 characters). No email provider or new environment variable is required.
+- A new `User.sessionVersion` field defaults to 0 and is created by the existing `prisma db push` startup command. The matching SQL migration is included for deployments using Prisma migrations.
+
+Only administrators with access to the deployed application's environment and database can generate recovery codes; normal website visitors cannot reset an account just by knowing its email.
