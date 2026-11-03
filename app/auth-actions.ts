@@ -1,10 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { jwtVerify } from "jose";
 import { randomInt } from "node:crypto";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { createSession, destroySession } from "@/lib/auth";
+import { createSession, destroySession, getAuthSecret, requireUser } from "@/lib/auth";
 import { broadcastFamily } from "@/lib/realtime";
 
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -187,11 +188,109 @@ export async function loginAction(formData: FormData) {
     fail("/login", "Email or password is incorrect.");
   }
 
-  await createSession(user.id);
+  await createSession(user.id, user.sessionVersion);
   redirect("/dashboard");
 }
 
 export async function logoutAction() {
   await destroySession();
   redirect("/login");
+}
+
+
+function passwordInputError(password: string, confirmation: string) {
+  if (password.length < 8 || password.length > 128) {
+    return "Password must be between 8 and 128 characters.";
+  }
+
+  if (password !== confirmation) {
+    return "The new passwords do not match.";
+  }
+
+  return null;
+}
+
+export async function changePasswordAction(formData: FormData) {
+  const user = await requireUser();
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmation = String(formData.get("confirmPassword") ?? "");
+
+  const inputError = passwordInputError(newPassword, confirmation);
+  if (inputError) {
+    fail("/settings", inputError);
+  }
+
+  if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+    fail("/settings", "Current password is incorrect.");
+  }
+
+  if (await bcrypt.compare(newPassword, user.passwordHash)) {
+    fail("/settings", "Choose a different password.");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  const update = await prisma.user.updateMany({
+    where: { id: user.id, sessionVersion: user.sessionVersion },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
+  });
+
+  if (update.count !== 1) {
+    fail("/settings", "Your account changed. Please sign in again and retry.");
+  }
+
+  // Keep this browser signed in while revoking older sessions on other devices.
+  await createSession(user.id, user.sessionVersion + 1);
+  redirect("/settings?success=Password%20changed.");
+}
+
+export async function resetPasswordAction(formData: FormData) {
+  const token = String(formData.get("token") ?? "").trim();
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmation = String(formData.get("confirmPassword") ?? "");
+
+  const inputError = passwordInputError(newPassword, confirmation);
+  if (inputError) {
+    fail("/reset-password", inputError);
+  }
+
+  if (!token || token.length > 4096) {
+    fail("/reset-password", "Invalid or expired recovery code.");
+  }
+
+  let userId: string;
+  let sessionVersion: number;
+
+  try {
+    const { payload } = await jwtVerify(token, getAuthSecret(), {
+      algorithms: ["HS256"],
+    });
+
+    if (
+      payload.purpose !== "password-reset" ||
+      typeof payload.userId !== "string" ||
+      !Number.isSafeInteger(payload.sessionVersion) ||
+      Number(payload.sessionVersion) < 0
+    ) {
+      fail("/reset-password", "Invalid or expired recovery code.");
+    }
+
+    userId = payload.userId as string;
+    sessionVersion = payload.sessionVersion as number;
+  } catch {
+    fail("/reset-password", "Invalid or expired recovery code.");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  const update = await prisma.user.updateMany({
+    where: { id: userId, sessionVersion },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
+  });
+
+  if (update.count !== 1) {
+    fail("/reset-password", "Invalid or expired recovery code.");
+  }
+
+  await destroySession();
+  redirect("/login?success=Password%20reset.%20Please%20log%20in.");
 }
