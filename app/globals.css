@@ -1209,3 +1209,10 @@ button:hover {
     align-self: flex-start;
   }
 }
+
+
+/* Keep server recovery instructions readable on narrow screens. */
+.auth-card code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

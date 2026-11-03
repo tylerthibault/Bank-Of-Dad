@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { updateCurrencyName } from "@/app/actions";
-import { logoutAction } from "@/app/auth-actions";
+import { changePasswordAction, logoutAction } from "@/app/auth-actions";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -10,8 +10,13 @@ function formatFamilyCode(code: string) {
   return code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
 }
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; success?: string }>;
+}) {
   const user = await requireUser();
+  const params = await searchParams;
 
   const family = await prisma.family.findUniqueOrThrow({
     where: { id: user.familyId },
@@ -49,6 +54,9 @@ export default async function SettingsPage() {
         </form>
       </header>
 
+      {params.error ? <div className="alert error">{params.error}</div> : null}
+      {params.success ? <div className="alert success">{params.success}</div> : null}
+
       <section className="settings-grid">
         <article className="panel settings-card">
           <p className="eyebrow">Display</p>
@@ -70,6 +78,30 @@ export default async function SettingsPage() {
               />
             </label>
             <button type="submit">Save currency name</button>
+          </form>
+        </article>
+
+        <article className="panel settings-card">
+          <p className="eyebrow">Account security</p>
+          <h2>Change password</h2>
+          <p className="subtle">
+            Enter your current password and choose a new one. Other signed-in parent sessions
+            for your account will be logged out.
+          </p>
+          <form action={changePasswordAction} className="stack compact-stack">
+            <label>
+              Current password
+              <input name="currentPassword" type="password" autoComplete="current-password" required />
+            </label>
+            <label>
+              New password
+              <input name="newPassword" type="password" autoComplete="new-password" minLength={8} maxLength={128} required />
+            </label>
+            <label>
+              Confirm new password
+              <input name="confirmPassword" type="password" autoComplete="new-password" minLength={8} maxLength={128} required />
+            </label>
+            <button type="submit">Change password</button>
           </form>
         </article>
 

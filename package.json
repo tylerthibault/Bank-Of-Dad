@@ -9,6 +9,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "password:recovery": "node scripts/generate-password-recovery.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

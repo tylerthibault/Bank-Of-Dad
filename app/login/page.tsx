@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; success?: string }>;
 }) {
   const user = await getCurrentUser();
 
@@ -29,6 +29,7 @@ export default async function LoginPage({
         </p>
 
         {params.error ? <div className="alert error">{params.error}</div> : null}
+        {params.success ? <div className="alert success">{params.success}</div> : null}
 
         <form action={loginAction} className="stack">
           <label>
@@ -48,6 +49,8 @@ export default async function LoginPage({
 
           <button type="submit">Log in</button>
         </form>
+
+        <p className="auth-footer"><Link href="/forgot-password">Forgot password?</Link></p>
 
         <div className="login-secondary-actions">
           <Link className="button-link secondary-button" href="/wall">
