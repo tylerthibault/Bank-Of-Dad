@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 const COOKIE_NAME = "bank_of_dad_session";
 
-function getSecret() {
+export function getAuthSecret() {
   const secret = process.env.AUTH_SECRET;
 
   if (!secret || secret.length < 32) {
@@ -15,12 +15,12 @@ function getSecret() {
   return new TextEncoder().encode(secret);
 }
 
-export async function createSession(userId: string) {
-  const token = await new SignJWT({ userId })
+export async function createSession(userId: string, sessionVersion = 0) {
+  const token = await new SignJWT({ purpose: "session", userId, sessionVersion })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("30d")
-    .sign(getSecret());
+    .sign(getAuthSecret());
 
   const cookieStore = await cookies();
 
@@ -47,17 +47,27 @@ export async function getCurrentUser() {
   }
 
   try {
-    const { payload } = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify(token, getAuthSecret(), { algorithms: ["HS256"] });
     const userId = typeof payload.userId === "string" ? payload.userId : null;
+    const sessionVersion = payload.sessionVersion === undefined ? 0 : payload.sessionVersion;
 
-    if (!userId) {
+    // Older session cookies are accepted until the password changes.
+    // Password recovery tokens must never be valid as login sessions.
+    if (
+      !userId ||
+      (payload.purpose !== "session" && payload.purpose !== undefined) ||
+      !Number.isSafeInteger(sessionVersion) ||
+      Number(sessionVersion) < 0
+    ) {
       return null;
     }
 
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { family: true },
     });
+
+    return user && user.sessionVersion === sessionVersion ? user : null;
   } catch {
     return null;
   }
